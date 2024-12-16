@@ -16,9 +16,6 @@ export class DropListTitle extends LitElement {
     `,
   ];
 
-  /**
-   * The name to say "Hello" to.
-   */
   @property()
   current = DEFAULT_LIST;
 
@@ -47,16 +44,18 @@ export class DropListTitle extends LitElement {
 
   private _addList() {
     let newList = prompt("Enter a new list name");
-    this.current = newList || "New List";
-    this.lists = [...this.lists, this.current];
-    saveLists(this.lists);
-    this.dispatchEvent(
-      new CustomEvent("list-added", {
-        detail: newList,
-        bubbles: true,
-        composed: true,
-      })
-    );
+    if (!newList === null) {
+      this.current = newList || "New List";
+      this.lists = [...this.lists, this.current];
+      saveLists(this.lists);
+      this.dispatchEvent(
+        new CustomEvent("list-added", {
+          detail: newList,
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
   }
 
   private _changeList() {

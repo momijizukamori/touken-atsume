@@ -96,16 +96,19 @@ export class DropListElement extends LitElement {
   private _increment() {
     this.total++;
     this.dispatchEvent(new CustomEvent("count-increase"));
+    this._saveList();
   }
 
   private _decrement() {
     this.total--;
     this.dispatchEvent(new CustomEvent("count-decrease"));
+    this._saveList();
   }
 
   private _add(e: CustomEvent) {
     const newSelection = swords.filter((sword) => e.detail.includes(sword.id));
     this.selection = this.selection.union(new Set(newSelection));
+    this._saveList();
   }
 
   private _remove(e: CustomEvent) {
@@ -113,18 +116,23 @@ export class DropListElement extends LitElement {
       e.detail.includes(sword.id)
     );
     this.selection = this.selection.difference(new Set(removeSelection));
+    this._saveList();
   }
 
   private addCustom() {
     let name = prompt("Enter a custom category name");
-    const newCounter = {
-      name: name || "Custom",
-      rarity: "R0",
-      type: "Other",
-      id: this.customOffset,
-    };
-    this.selection = this.selection.union(new Set([newCounter]));
-    this.customOffset = this.customOffset++;
+    if (!name === null) {
+      const newCounter = {
+        name: name || "Custom",
+        rarity: "R0",
+        type: "Other",
+        id: this.customOffset,
+      };
+      this.selection = this.selection.union(new Set([newCounter]));
+      this.customOffset = this.customOffset++;
+      this._saveList();
+    }
+
   }
 
   private _saveList() {

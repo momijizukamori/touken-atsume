@@ -67,7 +67,7 @@ export const swords = [
     },
     {
       "id": 21,
-      "rarity": "",
+      "rarity": "R5",
       "name": "Onimaru Kunitsuna",
       "type": "Tachi"
     },
@@ -330,38 +330,8 @@ export const swords = [
       "type": "Tachi"
     },
     {
-      "id": 108,
-      "rarity": "R3",
-      "name": "Higekiri",
-      "type": "Tachi"
-    },
-    {
-      "id": 109,
-      "rarity": "R3",
-      "name": "Higekiri",
-      "type": "Tachi"
-    },
-    {
-      "id": 110,
-      "rarity": "R4",
-      "name": "Higekiri",
-      "type": "Tachi"
-    },
-    {
       "id": 112,
       "rarity": "R2",
-      "name": "Hizamaru",
-      "type": "Tachi"
-    },
-    {
-      "id": 113,
-      "rarity": "R3",
-      "name": "Hizamaru",
-      "type": "Tachi"
-    },
-    {
-      "id": 114,
-      "rarity": "R4",
       "name": "Hizamaru",
       "type": "Tachi"
     },
@@ -397,7 +367,7 @@ export const swords = [
     },
     {
       "id": 126,
-      "rarity": "",
+      "rarity": "R4",
       "name": "Nukemaru",
       "type": "Tachi"
     },
@@ -637,7 +607,7 @@ export const swords = [
     },
     {
       "id": 208,
-      "rarity": "",
+      "rarity": "R5",
       "name": "Heishishourinken",
       "type": "Tsurugi"
     },
@@ -703,13 +673,13 @@ export const swords = [
     },
     {
       "id": 230,
-      "rarity": "",
+      "rarity": "R3",
       "name": "Tomita Gou",
       "type": "Uchigatana"
     },
     {
       "id": 232,
-      "rarity": "",
+      "rarity": "R2",
       "name": "Taikei Naotane",
       "type": "Uchigatana"
     }
