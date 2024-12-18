@@ -26,6 +26,10 @@ export class DropListElement extends LitElement {
         display: inline-block;
         vertical-align: top;
       }
+
+      label {
+        display: inline-block;
+      }
     `,
   ];
 
@@ -45,6 +49,12 @@ export class DropListElement extends LitElement {
 
   @property({ type: Object })
   countData: { [key: string]: number } = {};
+
+  @property({type: Object})
+  starred: Set<String> = new Set<String>();
+
+  @property({type: Boolean})
+  starredFirst = true;
 
   @queryAll("drop-counter")
   _counters!: NodeListOf<DropCounterElement>;
@@ -66,6 +76,7 @@ export class DropListElement extends LitElement {
         @selection-added=${this._add}
         @list-added=${this._addList}
         @list-changed=${this._changeList}
+        @toggle-star=${this._changeStarred}
       >
         <div id="header">
           <drop-title></drop-title>
@@ -79,6 +90,14 @@ export class DropListElement extends LitElement {
               <option value="rarity_type">Rarity, then type</option>
             </select>
           </label>
+          <label>
+              <input
+                type="checkbox"
+                .checked=${this.starredFirst}
+                @change=${this._toggleStarredFirst}
+              />
+              Starred First
+            </label>
           <h1>Total: ${this.total}</h1>
         </div>
         <details id="filters">
@@ -91,6 +110,7 @@ export class DropListElement extends LitElement {
           ${this._sortSwords([...this.selection]).map((sword) => {
             return html` <drop-counter
               rarity=${sword.rarity}
+              .star=${this.starred.has(sword.id.toString())}
               .total=${this.total}
               .swordId=${sword.id.toString()}
               .name=${sword.name}
@@ -185,7 +205,13 @@ export class DropListElement extends LitElement {
       type_rarity: typeRarityName,
     };
 
-    return swords.sort(funcKey[this.sortOrder as keyof typeof funcKey]);
+    if (this.starredFirst) {
+      const starred = swords.filter((sword) => this.starred.has(sword.id.toString())).sort(funcKey[this.sortOrder as keyof typeof funcKey]);
+      const unstarred = swords.filter((sword) => !this.starred.has(sword.id.toString())).sort(funcKey[this.sortOrder as keyof typeof funcKey]);
+      return [...starred, ...unstarred];
+    } else {
+      return swords.sort(funcKey[this.sortOrder as keyof typeof funcKey]);
+    }
   }
 
   private addCustom() {
@@ -228,6 +254,19 @@ export class DropListElement extends LitElement {
 
   private _changeSort() {
     this.sortOrder = this._sort?.value || "name";
+  }
+
+  private _changeStarred(e: CustomEvent) {
+    let {id, add} = e.detail;
+    if (add) {
+      this.starred = this.starred.union(new Set([id]));
+    } else {
+      this.starred = this.starred.difference(new Set([id]));
+    }
+  }
+
+  private _toggleStarredFirst() {
+    this.starredFirst = !this.starredFirst;
   }
 
   private _changeList(e: CustomEvent) {

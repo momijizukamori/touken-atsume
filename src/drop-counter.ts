@@ -4,6 +4,7 @@ import { consume } from "@lit/context";
 import { totalContext } from "./drop-list.js";
 import { inputStyles } from "./styles.js";
 import {query} from 'lit/decorators/query.js';
+import { mdiClose, mdiStarOutline, mdiStar } from '@mdi/js';
 
 @customElement("drop-counter")
 export class DropCounterElement extends LitElement {
@@ -14,14 +15,45 @@ export class DropCounterElement extends LitElement {
         display: flex;
         flex-wrap: wrap;
       }
-      div {
+
+      .box {
         width: 12rem;
         height: 12rem;
         text-align: center;
-        border-radius: var(--bd-radius);
+        position: relative;
         display: flex;
         flex-direction: column;
+        border-radius: var(--bd-radius);
       }
+
+      .remove {
+
+        left: 0;
+      }
+
+      svg {
+        fill: currentColor;
+        opacity: 0.3;
+        transition: all var(--tr-duration) ease-out;
+      }
+
+      svg:hover {
+        opacity: 1;
+        transition: all var(--tr-duration) ease-in;
+        cursor: pointer;
+      }
+
+      .remove, .fave {
+        position: absolute;
+        top: 0;
+        height: 2rem;
+        width: 2rem;
+      }
+
+      .fave {
+        right: 0;
+      }
+
       h2 {
         font-size: 1.5rem;
         padding: 0;
@@ -80,6 +112,9 @@ export class DropCounterElement extends LitElement {
   @property({ type: String, attribute: false })
   swordId = "0";
 
+  @property({ type: Boolean, attribute: false })
+  star = false;
+
   /**
    * The number of times the button has been clicked.
    */
@@ -93,6 +128,14 @@ export class DropCounterElement extends LitElement {
   override render() {
     return html`
       <div class="box ${this.rarity}">
+      <!-- <div class="remove"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${mdiClose}" /></svg></div> -->
+      <div class="fave">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" @click=${() => {
+                  this.toggleStar(this.swordId);
+                }}>
+        <path d="${this.star ? mdiStar : mdiStarOutline}" />
+      </svg>
+      </div>
         <div class="title"><h2>${this.name}</h2></div>
         ${this.count && ((this.count / this.total) * 100).toPrecision(4)}%
         <span class="controls">
@@ -120,7 +163,11 @@ export class DropCounterElement extends LitElement {
     }
   }
 
-
+  private toggleStar(id: string) {
+    this.dispatchEvent(
+      new CustomEvent("toggle-star", { detail: {'id': id, 'add': !this.star}, bubbles: true, composed: true })
+    );
+  }
 
 resizeText() {
   const el = this._title;
