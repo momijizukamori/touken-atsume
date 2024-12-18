@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { createContext, provide } from "@lit/context";
-import { customElement, property, queryAll } from "lit/decorators.js";
+import { customElement, property, queryAll, query } from "lit/decorators.js";
 import { swords, Sword } from "./swords";
 import { getList, saveList, DEFAULT_LIST } from "./store";
 import { DropCounterElement } from "./drop-counter";
@@ -40,11 +40,18 @@ export class DropListElement extends LitElement {
   @property({ type: String })
   listName = DEFAULT_LIST;
 
+  @property({ type: String })
+  sortOrder = "name";
+
   @property({ type: Object })
   countData: { [key: string]: number } = {};
 
   @queryAll("drop-counter")
   _counters!: NodeListOf<DropCounterElement>;
+
+  @query("#sort")
+  _sort: HTMLSelectElement | undefined;
+
   /**
    * The list of drops to create counters for
    */
@@ -62,6 +69,16 @@ export class DropListElement extends LitElement {
       >
         <div id="header">
           <drop-title></drop-title>
+          <label
+            >Sort by:
+            <select id="sort" @change=${this._changeSort}>
+              <option value="name">Name</option>
+              <option value="rarity">Rarity</option>
+              <option value="type">Type</option>
+              <option value="type_rarity">Type, then rarity</option>
+              <option value="rarity_type">Rarity, then type</option>
+            </select>
+          </label>
           <h1>Total: ${this.total}</h1>
         </div>
         <details id="filters">
@@ -71,7 +88,7 @@ export class DropListElement extends LitElement {
         </details>
 
         <div id="counters">
-          ${[...this.selection].map((sword) => {
+          ${this._sortSwords([...this.selection]).map((sword) => {
             return html` <drop-counter
               rarity=${sword.rarity}
               .total=${this.total}
@@ -119,6 +136,58 @@ export class DropListElement extends LitElement {
     this._saveList();
   }
 
+  private _sortSwords(swords: Sword[]) {
+    const name = (a: Sword, b: Sword) => {
+      return a["name"].localeCompare(b["name"]);
+    };
+    const rarity = (a: Sword, b: Sword) => {
+      return b["rarity"].localeCompare(a["rarity"]);
+    }; // Reversed so higher rarity is first
+    const type = (a: Sword, b: Sword) => {
+      return a["type"].localeCompare(b["type"]);
+    };
+
+    const rarityName = (a: Sword, b: Sword) => {
+      const raritySort = rarity(a, b);
+      return raritySort == 0 ? name(a, b) : raritySort;
+    };
+
+    const typeName = (a: Sword, b: Sword) => {
+      const typeSort = type(a, b);
+      return typeSort == 0 ? name(a, b) : typeSort;
+    };
+
+    const typeRarityName = (a: Sword, b: Sword) => {
+      const typeSort = type(a, b);
+      const raritySort = rarity(a, b);
+      return typeSort == 0
+        ? raritySort == 0
+          ? name(a, b)
+          : raritySort
+        : typeSort;
+    };
+
+    const rarityTypeName = (a: Sword, b: Sword) => {
+      const typeSort = type(a, b);
+      const raritySort = rarity(a, b);
+      return raritySort == 0
+        ? typeSort == 0
+          ? name(a, b)
+          : typeSort
+        : raritySort;
+    };
+
+    const funcKey = {
+      name: name,
+      rarity: rarityName,
+      type: typeName,
+      rarity_type: rarityTypeName,
+      type_rarity: typeRarityName,
+    };
+
+    return swords.sort(funcKey[this.sortOrder as keyof typeof funcKey]);
+  }
+
   private addCustom() {
     let name = prompt("Enter a custom category name");
     if (!name === null) {
@@ -132,7 +201,6 @@ export class DropListElement extends LitElement {
       this.customOffset = this.customOffset++;
       this._saveList();
     }
-
   }
 
   private _saveList() {
@@ -156,6 +224,10 @@ export class DropListElement extends LitElement {
     this.selection = new Set();
     this.total = 0;
     this.countData = {};
+  }
+
+  private _changeSort() {
+    this.sortOrder = this._sort?.value || "name";
   }
 
   private _changeList(e: CustomEvent) {

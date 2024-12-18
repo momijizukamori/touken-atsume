@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { consume } from "@lit/context";
 import { totalContext } from "./drop-list.js";
 import { inputStyles } from "./styles.js";
+import {query} from 'lit/decorators/query.js';
 
 @customElement("drop-counter")
 export class DropCounterElement extends LitElement {
@@ -14,21 +15,37 @@ export class DropCounterElement extends LitElement {
         flex-wrap: wrap;
       }
       div {
-        width: 15em;
-        height: 15em;
+        width: 12rem;
+        height: 12rem;
         text-align: center;
         border-radius: var(--bd-radius);
+        display: flex;
+        flex-direction: column;
+      }
+      h2 {
+        font-size: 1.5rem;
+        padding: 0;
+        margin: auto 0;
+  line-height: 1.25;
+
+      }
+      .title {
+        width: 11rem;
+        height: 4rem;
+        margin: 0.5rem;
       }
       .controls {
-        font-size: 2rem;
+        font-size: 1.25rem;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         flex-wrap: nowrap;
+        margin-top: auto;
       }
       button {
         padding: 0.5rem 1rem;
         font-weight: bold;
-        font-size: 2rem;
+        font-size: 1.5rem;
       }
       .R5 {
         border: 10px solid var(--attention);
@@ -50,6 +67,9 @@ export class DropCounterElement extends LitElement {
       }
     `,
   ];
+
+  @query('h2')
+  _title!: HTMLElement;
 
   @property({ type: String, attribute: false })
   name = "";
@@ -73,7 +93,7 @@ export class DropCounterElement extends LitElement {
   override render() {
     return html`
       <div class="box ${this.rarity}">
-        <h2>${this.name}</h2>
+        <div class="title"><h2>${this.name}</h2></div>
         ${this.count && ((this.count / this.total) * 100).toPrecision(4)}%
         <span class="controls">
           <button @click=${this._decrement} part="button">-</button>
@@ -99,6 +119,33 @@ export class DropCounterElement extends LitElement {
       );
     }
   }
+
+
+
+resizeText() {
+  const el = this._title;
+    let i = 0.5;
+    const parent = el.parentNode as HTMLElement;
+    let overflow = el.clientWidth > parent.clientWidth;
+
+
+    while (!overflow && i < 1.75 && parent) {
+        el.style.fontSize = `${i}rem`
+        overflow = parent.scrollWidth > parent.clientWidth;
+
+      if (!overflow) i += 0.25
+    }
+
+    // revert to last state where no overflow happened
+    el.style.fontSize = `${i - 0.25}rem`
+  }
+
+firstUpdated() {
+
+  this.resizeText();
+
+}
+
 }
 
 declare global {

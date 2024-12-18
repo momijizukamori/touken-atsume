@@ -3,7 +3,7 @@
   /* Font */
   --ft: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --ft-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-  --ft-size: 18px;
+  --ft-size: 1em;
 
   /* Layouts */
   --ly-header-size: 3.5rem;
