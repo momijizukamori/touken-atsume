@@ -44,7 +44,7 @@ export class DropListTitle extends LitElement {
 
   private _addList() {
     let newList = prompt("Enter a new list name");
-    if (!newList === null) {
+    if (!(newList === null)) {
       this.current = newList || "New List";
       this.lists = [...this.lists, this.current];
       saveLists(this.lists);

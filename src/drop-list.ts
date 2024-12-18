@@ -190,7 +190,7 @@ export class DropListElement extends LitElement {
 
   private addCustom() {
     let name = prompt("Enter a custom category name");
-    if (!name === null) {
+    if (!(name === null)) {
       const newCounter = {
         name: name || "Custom",
         rarity: "R0",
@@ -233,6 +233,11 @@ export class DropListElement extends LitElement {
   private _changeList(e: CustomEvent) {
     this._saveList();
     this.listName = e.detail;
+    this._loadList()
+
+  }
+
+  private _loadList() {
     let data = getList(this.listName);
     let keys = Object.keys(data.counts).map((key) => parseInt(key));
     let selected = swords.filter((sword) => keys.includes(sword.id));
@@ -246,6 +251,12 @@ export class DropListElement extends LitElement {
     this.total = total;
     this.selection = new Set([...selected, ...customs]);
     this.countData = data.counts;
+  }
+
+  firstUpdated() {
+
+    this._loadList();
+  
   }
 }
 
